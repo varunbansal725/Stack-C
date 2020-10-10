@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+}*first=NULL;
+
+void display1() {
+    struct Node *p=first;
+    while(p!=NULL) {
+        printf("%d ", p->data);
+        p=p->next;
+    }
+    printf("\n");
+}
+
+void push(int key) {
+    struct Node *t;
+    t=(struct Node *)malloc(sizeof(struct Node));
+    t->data=key;
+    t->next=first;
+    first=t;
+}
+
+void pop() {
+    int x=-1;
+    struct Node *t;
+    if(first!=NULL) {
+    t=first;
+    first=first->next;
+    x=t->data;
+    free(t);
+    }
+}
+
+int isEmpty() {
+    
+    if(first==NULL)
+        return 1;
+    return 0;    
+}
+
+
+int isFull() {
+    struct Node *t;
+    t=(struct Node *)malloc(sizeof(struct Node));
+    if(t==NULL)
+        return 1;
+    return 0;    
+}
+
+
+int peek(int position) {
+    struct Node *t=first;
+    for(int i=0; i < position-1 && t!=NULL; i++)
+        t=t->next;
+    if(t!=NULL)
+        return t->data;
+    else 
+    return -1;
+}
+
+int main()
+{
+    struct Node stack;
+    push(50);
+    push(100);
+    push(150);
+    pop();
+    push(200);
+    display1();
+    printf("%d\n", peek(2));
+    printf("%d\n", isEmpty());
+    printf("%d\n", isFull());
+}
