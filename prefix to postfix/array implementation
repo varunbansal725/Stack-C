@@ -66,7 +66,7 @@ int isOperator(char c) {
         return 0;
 }
 
-char * infix_prefix(char *phrase) {
+char * infix_postfix(char *phrase) {
     struct Stack st;
     st.size=strlen(phrase);
     st.top=-1;
