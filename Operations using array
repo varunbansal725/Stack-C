@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct Stack {
     int size;
@@ -38,13 +39,14 @@ void push(struct Stack *stack, int element) {
 }
 }
 
-void pop(struct Stack *stack) {
+int pop(struct Stack *stack) {
     int x;
     if(stack->top==-1)
         printf("Underflow");
     else {
         x=stack->s[stack->top];
         stack->top--;
+        return x;
 }
 }
 
@@ -55,9 +57,51 @@ void display(struct Stack stack) {
     printf("\n");
 }
 
+int isOperand(char x) {
+    if(x=='+' || x=='-' || x=='*' || x=='/')
+        return 0;
+    return 1;
+}
 
-int main()
+int evaluate_postfix(char *phrase) {
+    struct Stack st;
+    int i,x1,x2,r;
+    st.size=strlen(phrase)+1;
+    st.top=-1;
+    st.s=(int *)malloc((strlen(phrase)+1)*sizeof(int));
+    for(i=0; phrase[i]!='\0'; i++) {
+        if(isOperand(phrase[i]))
+            push(&st, phrase[i]-'0');
+        else {
+                x1 = pop(&st);
+                x2 = pop(&st);
+            switch(phrase[i]) {
+            case '+':
+                r=x2+x1;
+                push(&st, r);
+                break;
+            case '-':
+                r=x2-x1;
+                push(&st, r);
+                break;
+            case '*':
+                r=x2*x1;
+                push(&st, r);
+                break;
+            case '/':
+                r=x2/x1;
+                push(&st, r);
+                break;
+            }
+        }
+    }
+    return pop(&st);
+}
+
+
+void main()
 {
+    char *phrase="53+62/*35*+";
     struct Stack stack;
     stack.size=10;
     stack.top=-1;
@@ -73,5 +117,6 @@ int main()
     printf("%d\n", isEmpty(stack));
     printf("Top element is: %d\n", findTop(stack));
     printf("Size of stack is: %d\n", stack.size);
-    
+    printf("The result of the postfix expression is: %d\n", evaluate_postfix(phrase));
+
 }
