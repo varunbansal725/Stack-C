@@ -7,7 +7,7 @@ struct Node {
     struct Node *next;
 }*top=NULL;
 
-void push(char key) {
+void push(struct Node *stack, char key) {
     struct Node *t;
     t=(struct Node *)malloc(sizeof(struct Node));
     t->data=key;
@@ -15,7 +15,7 @@ void push(char key) {
     top=t;
 }
 
-char pop() {
+char pop(struct Node *stack) {
     struct Node *t;
     char x;
     if(top==NULL)
@@ -54,20 +54,25 @@ int presidence(char c) {
 char * infix_postfix(char *phrase) {
     int i,j;
     i=j=0;
+    struct Node st;
     char *output=(char *)malloc((strlen(phrase)+2)*sizeof(char));
+    /* this push is because in the function infix_postfix(), a condition is checked if whether the precidence of the top->data is greater than or
+    smaller than than the precidence of phrase[i], & if we call this function with empty stack, then it will not be able to find the precidence of top->data because top->data
+    exist in the beginning */
 
+    push(&st, '#');
     while(phrase[i]!='\0') {
     if(isOperand(phrase[i]))
         output[j++] = phrase[i++];
     else {
         if(presidence(phrase[i]) > presidence(top->data))
-            push(phrase[i++]);
+            push(&st, phrase[i++]);
         else
-            output[j++] = pop();
+            output[j++] = pop(&st);
     }
     }
     while(top)
-        output[j++] = pop();
+        output[j++] = pop(&st);
 
     output[j]='\0';
 
@@ -83,17 +88,46 @@ display(struct Node stack) {
     printf("\n");
 }
 
+int evaulatePostfix(char *phrase) {
+    struct Node *stack;
+    int i,x1,x2,r=0;
+    for(i=0; phrase[i]!='\0'; i++) {
+        if(isOperand(phrase[i]))
+            push(&stack, phrase[i]-'0');
+        else {
+            x1=pop(&stack);
+            x2=pop(&stack);
+            switch(phrase[i]) {
+                case '+':
+                    r=x2+x1;
+                    push(&stack, r);
+                    break;
+                case '-':
+                    r=x2-x1;
+                    push(&stack, r);
+                    break;
+                case '*':
+                    r=x2*x1;
+                    push(&stack, r);
+                    break;
+                case '/':
+                    r=x2/x1;
+                    push(&stack, r);
+                    break;
+                }
+        }
+    }
+    return pop(&stack);
+}
 
 
-int main()
+in main()
 {
     char *phrase="a+b*c";
     printf("Before conversion: %s\n", phrase);
+    char *exp="53+62/*35*+";
 
-    /* this push is because in the function infix_postfix(), a condition is checked if whether the precidence of the top->data is greater than or
-    smaller than than the precidence of phrase[i], & if we call this function with empty stack, then it will not be able to find the precidence of top->data because top->data
-    exist in the beginning */
-    push('#');
     printf("After conversion from Infix to Postfix: %s\n", infix_postfix(phrase));
+    printf("After postfix evaluation: %d", evaulatePostfix(exp));
 
 }
